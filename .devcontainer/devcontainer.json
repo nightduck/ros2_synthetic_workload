@@ -6,7 +6,8 @@
 			"WORKSPACE": "${containerWorkspaceFolder}"
 		}
 	},
-	"remoteUser": "ros",
+	"workspaceFolder": "/workspace",
+	"workspaceMount": "source=/home/oren/git/ros2_synthetic_workload,target=/workspace,type=bind,consistency=cached",
 	"runArgs": [
 		"--network=host",
 		"--cap-add=SYS_PTRACE",

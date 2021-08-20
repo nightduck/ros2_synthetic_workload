@@ -1,4 +1,4 @@
-FROM althack/ros2:foxy-dev 
+FROM althack/ros2:foxy-full
 
 # ** [Optional] Uncomment this section to install additional packages. **
 #
@@ -14,4 +14,4 @@ FROM althack/ros2:foxy-dev
 
 # Set up auto-source of workspace for ros user
 ARG WORKSPACE
-RUN echo "if [ -f ${WORKSPACE}/install/setup.bash ]; then source ${WORKSPACE}/install/setup.bash; fi" >> /home/ros/.bashrc
+RUN echo "if [ -f ${WORKSPACE}/install/setup.bash ]; then source ${WORKSPACE}/install/setup.bash; fi" >> /root/.bashrc
