@@ -18,13 +18,14 @@ std::string string_thread_id()
   return std::to_string(hashed);
 }
 
+// Just a garbage operation to kill time
 int64_t burn(int64_t in) {
     int32_t lo = (int32_t)in;
     int32_t me = (int32_t)(in >> 16);
     int32_t hi = (int32_t)(in >> 32);
 
     in = (SEED1 * lo + SEED2 * me + SEED3 * hi) ^ SEED64;
-
+    in ^= in << 1;
     double decimal = (double)in / SEED1;
     return (int64_t)std::floor(decimal * decimal * decimal);
 }
@@ -32,88 +33,42 @@ int64_t burn(int64_t in) {
 class FullNode: public rclcpp::Node
 {
 public:
-    void empty_timer() {
-        // Burn time here
-        rclcpp::Time start = this->now();
-        while(this->now() - start < 20ms) {
-            count_ = burn(count_);
-        }
-
-        RCLCPP_INFO(this->get_logger(), "Empty timer");
-    }
-
     void publishing_timer() {
         // Burn time here
         rclcpp::Time start = this->now();
-        while(this->now() - start < 10ms) {
+        while(this->now() - start < 100ms) {
             count_ = burn(count_);
         }
 
         std_msgs::msg::Int64 msg;
         msg.data = count_;
-        lb_pub_->publish(msg);
-        mb_pub_->publish(msg);
-        hb_pub_->publish(msg);
+        la_pub_->publish(msg);
+        ma_pub_->publish(msg);
+        ha_pub_->publish(msg);
     }
 
-    void high_prio_stage_a_callback(const std_msgs::msg::Int64::SharedPtr msg) {
+    void high_prio_callback(const std_msgs::msg::Int64::SharedPtr msg) {
         // Burn time here
         rclcpp::Time start = this->now();
-        while(this->now() - start < 20ms) {
+        while(this->now() - start < 100ms) {
             msg->data = burn(msg->data);
         }
-
-        hb_pub_->publish(*msg);
     }
 
-    void med_prio_stage_a_callback(const std_msgs::msg::Int64::SharedPtr msg) {
+    void med_prio_callback(const std_msgs::msg::Int64::SharedPtr msg) {
         // Burn time here
         rclcpp::Time start = this->now();
-        while(this->now() - start < 20ms) {
+        while(this->now() - start < 100ms) {
             msg->data = burn(msg->data);
         }
-
-        mb_pub_->publish(*msg);
     }
 
-    void low_prio_stage_a_callback(const std_msgs::msg::Int64::SharedPtr msg) {
+    void low_prio_callback(const std_msgs::msg::Int64::SharedPtr msg) {
         // Burn time here
         rclcpp::Time start = this->now();
-        while(this->now() - start < 20ms) {
+        while(this->now() - start < 100ms) {
             msg->data = burn(msg->data);
         }
-
-        lb_pub_->publish(*msg);
-    }
-
-    void high_prio_stage_b_callback(const std_msgs::msg::Int64::SharedPtr msg) {
-        // Burn time here
-        rclcpp::Time start = this->now();
-        while(this->now() - start < 10ms) {
-            msg->data = burn(msg->data);
-        }
-
-        RCLCPP_INFO(this->get_logger(), "Hi prio end");
-    }
-
-    void med_prio_stage_b_callback(const std_msgs::msg::Int64::SharedPtr msg) {
-        // Burn time here
-        rclcpp::Time start = this->now();
-        while(this->now() - start < 10ms) {
-            msg->data = burn(msg->data);
-        }
-
-        RCLCPP_INFO(this->get_logger(), "Med prio end");
-    }
-
-    void low_prio_stage_b_callback(const std_msgs::msg::Int64::SharedPtr msg) {
-        // Burn time here
-        rclcpp::Time start = this->now();
-        while(this->now() - start < 10ms) {
-            msg->data = burn(msg->data);
-        }
-
-        RCLCPP_INFO(this->get_logger(), "Low prio end");
     }
 
     FullNode() : Node("fullnode") {
@@ -122,25 +77,15 @@ public:
         ha_pub_ = this->create_publisher<std_msgs::msg::Int64>("ha", 1);
         ma_pub_ = this->create_publisher<std_msgs::msg::Int64>("ma", 1);
         la_pub_ = this->create_publisher<std_msgs::msg::Int64>("la", 1);
-        hb_pub_ = this->create_publisher<std_msgs::msg::Int64>("hb", 1);
-        mb_pub_ = this->create_publisher<std_msgs::msg::Int64>("mb", 1);
-        lb_pub_ = this->create_publisher<std_msgs::msg::Int64>("lb", 1);
 
         ha_sub_ = this->create_subscription<std_msgs::msg::Int64>("ha", 1,
-                                        std::bind(&FullNode::high_prio_stage_a_callback, this, _1));
+                                        std::bind(&FullNode::high_prio_callback, this, _1));
         ma_sub_ = this->create_subscription<std_msgs::msg::Int64>("ma", 1,
-                                        std::bind(&FullNode::med_prio_stage_a_callback, this, _1));
+                                        std::bind(&FullNode::med_prio_callback, this, _1));
         la_sub_ = this->create_subscription<std_msgs::msg::Int64>("la", 1,
-                                        std::bind(&FullNode::low_prio_stage_a_callback, this, _1));
-        hb_sub_ = this->create_subscription<std_msgs::msg::Int64>("hb", 1,
-                                        std::bind(&FullNode::high_prio_stage_b_callback, this, _1));
-        mb_sub_ = this->create_subscription<std_msgs::msg::Int64>("mb", 1,
-                                        std::bind(&FullNode::med_prio_stage_b_callback, this, _1));
-        lb_sub_ = this->create_subscription<std_msgs::msg::Int64>("lb", 1,
-                                        std::bind(&FullNode::low_prio_stage_b_callback, this, _1));
+                                        std::bind(&FullNode::low_prio_callback, this, _1));
 
-        pub_tmr_ = this->create_wall_timer(150ms, std::bind(&FullNode::publishing_timer, this));
-        donothing_tmr_ = this->create_wall_timer(75ms, std::bind(&FullNode::empty_timer, this));
+        pub_tmr_ = this->create_wall_timer(500ms, std::bind(&FullNode::publishing_timer, this));
     }
 
 private:
@@ -163,65 +108,58 @@ private:
     rclcpp::TimerBase::SharedPtr donothing_tmr_;
 };
 
-class Timer1 : public rclcpp::Node
+class TriPubTimer : public rclcpp::Node
 {
 public:
-    void timer1_callback() {
-        rclcpp::Time now = this->now();
-        RCLCPP_INFO(this->get_logger(), "Callback start: %.9f", now.seconds());
-
-        auto message = std_msgs::msg::Int64();
-        message.data = this->count_++;
-
+    void publishing_timer() {
         // Burn time here
-        for(int i = 0; i < 1000000; i++) {
-            message.data = burn(message.data);
+        rclcpp::Time start = this->now();
+        while(this->now() - start < 100ms) {
+            count_ = burn(count_);
         }
 
-        // // Publish current thread
-        // auto curr_thread = string_thread_id();
-        // RCLCPP_INFO(
-        // this->get_logger(), "\n<<THREAD %s>> Publishing '%d'",
-        // curr_thread.c_str(), message.data);
+        std_msgs::msg::Int64 msg;
+        msg.data = count_;
+        la_pub_->publish(msg);
+        ma_pub_->publish(msg);
+        ha_pub_->publish(msg);
+    }
 
-        this->publisher_->publish(message);
-        
-        now = this->now();
-        RCLCPP_INFO(this->get_logger(), "Callback end:   %.9f", now.seconds());
-    };
-
-    Timer1(std::string topic, std::chrono::milliseconds ms) : rclcpp::Node("timer") {
-        publisher_ = this->create_publisher<std_msgs::msg::Int64>(topic, 1);
-        timer_ = this->create_wall_timer(ms, std::bind(&Timer1::timer1_callback, this));
+    TriPubTimer() : rclcpp::Node("timer") {
+        ha_pub_ = this->create_publisher<std_msgs::msg::Int64>("ha", 1);
+        ma_pub_ = this->create_publisher<std_msgs::msg::Int64>("ma", 1);
+        la_pub_ = this->create_publisher<std_msgs::msg::Int64>("la", 1);
+        timer_ = this->create_wall_timer(500ms, std::bind(&TriPubTimer::publishing_timer, this));
     }
 
 private:
     rclcpp::TimerBase::SharedPtr timer_;
-    rclcpp::Publisher<std_msgs::msg::Int64>::SharedPtr publisher_;
+    rclcpp::Publisher<std_msgs::msg::Int64>::SharedPtr ha_pub_;
+    rclcpp::Publisher<std_msgs::msg::Int64>::SharedPtr ma_pub_;
+    rclcpp::Publisher<std_msgs::msg::Int64>::SharedPtr la_pub_;
     size_t count_;
 };
 
 
-class SubHi1 : public rclcpp::Node
+class Sub : public rclcpp::Node
 {
 public:
-    void subpub_callback(const std_msgs::msg::Int64::SharedPtr msg) {
+    void subscriber_callback(const std_msgs::msg::Int64::SharedPtr msg) {
         // Burn time here
-        for(int i = 0; i < 10000; i++) {
+        rclcpp::Time start = this->now();
+        while(this->now() - start < ms_) {
             msg->data = burn(msg->data);
         }
+    }
 
-        this->publisher_->publish(*msg);
-    };
-
-    SubHi1(std::string sub_topic, std::string pub_topic, std::chrono::milliseconds ms) : rclcpp::Node("sh1") {
+    Sub(std::string sub_topic, std::chrono::milliseconds ms) : rclcpp::Node("sub_" + sub_topic) {
+        ms_ = ms;
         subscriber_ = this->create_subscription<std_msgs::msg::Int64>(sub_topic, 1,
-                                std::bind(&SubHi1::subpub_callback, this, _1));
-        publisher_ = this->create_publisher<std_msgs::msg::Int64>(pub_topic, 1);
+                                std::bind(&Sub::subscriber_callback, this, _1));
     }
 
 private:
     rclcpp::Subscription<std_msgs::msg::Int64>::SharedPtr subscriber_;
-    rclcpp::Publisher<std_msgs::msg::Int64>::SharedPtr publisher_;
+    std::chrono::milliseconds ms_;
     size_t count_;
 };

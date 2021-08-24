@@ -18,11 +18,14 @@ include_directories(
   include
 )
 
-add_executable(mt_exec src/mt_exec.cpp)
-ament_target_dependencies(mt_exec rclcpp std_msgs)
+add_executable(mt_exec_shared_node src/mt_exec_shared_node.cpp)
+ament_target_dependencies(mt_exec_shared_node rclcpp std_msgs)
+
+add_executable(mt_exec_personal_nodes src/mt_exec_personal_nodes.cpp)
+ament_target_dependencies(mt_exec_personal_nodes rclcpp std_msgs)
 
 install(TARGETS
-  mt_exec
+  mt_exec_shared_node mt_exec_personal_nodes
   DESTINATION lib/${PROJECT_NAME}
 )
 

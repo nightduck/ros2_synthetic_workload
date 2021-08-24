@@ -1,13 +1,11 @@
-rm callbacks.txt
-touch callbacks.txt
+> callbacks.txt
+
+# Multithreaded executor, single node
 echo 'mt_exec,empty_timer' >> callbacks.txt
 echo 'mt_exec,publishing_timer' >> callbacks.txt
-echo 'mt_exec,high_prio_stage_a_callback' >> callbacks.txt
-echo 'mt_exec,med_prio_stage_a_callback' >> callbacks.txt
-echo 'mt_exec,low_prio_stage_a_callback' >> callbacks.txt
-echo 'mt_exec,high_prio_stage_b_callback' >> callbacks.txt
-echo 'mt_exec,med_prio_stage_b_callback' >> callbacks.txt
-echo 'mt_exec,low_prio_stage_b_callback' >> callbacks.txt
+echo 'mt_exec,high_prio_callback' >> callbacks.txt
+echo 'mt_exec,med_prio_callback' >> callbacks.txt
+echo 'mt_exec,low_prio_callback' >> callbacks.txt
 
 #objdump -d actor_detection | grep rclcpp | grep Publisher | grep cinematography_msgs | grep msg | grep BoundingBox | grep publish
 #objdump -d motion_planner | grep do_intra_process_publish
