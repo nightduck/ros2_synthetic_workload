@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(ros2_synthetic_workload)
+project(synthetic_workload)
 
 # Default to C++14
 if(NOT CMAKE_CXX_STANDARD)
@@ -18,11 +18,11 @@ include_directories(
   include
 )
 
-add_executable(multithreaded_executor src/mt_exec.cpp)
-ament_target_dependencies(multithreaded_executor rclcpp std_msgs)
+add_executable(mt_exec src/mt_exec.cpp)
+ament_target_dependencies(mt_exec rclcpp std_msgs)
 
 install(TARGETS
-  multithreaded_executor
+  mt_exec
   DESTINATION lib/${PROJECT_NAME}
 )
 

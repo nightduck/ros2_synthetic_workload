@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format2.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="2">
-  <name>ros2_synthetic_workload</name>
+  <name>synthetic_workload</name>
   <version>0.12.0</version>
   <description>Package to test behaviour of different executors</description>
   <maintainer email="oren.bell@wustl.edu">Oren Bell</maintainer>

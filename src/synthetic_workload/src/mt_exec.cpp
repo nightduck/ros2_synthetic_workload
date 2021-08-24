@@ -23,10 +23,11 @@ int main(int argc, char const *argv[])
 
     rclcpp::executors::MultiThreadedExecutor exec(rclcpp::ExecutorOptions(), 4);
 
-    auto t1 = std::make_shared<Timer1>("c1a", 100ms);
+    //auto t1 = std::make_shared<Timer1>("c1a", 100ms);
     //auto s1 = std::make_shared<SubHi1>("c1a", "c1b", 50ms);
+    auto fn = std::make_shared<FullNode>();
 
-    exec.add_node(t1);
+    exec.add_node(fn);
 
     exec.spin();
 
