@@ -13,19 +13,23 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
+find_package(synthetic_workload_msgs REQUIRED)
 
 include_directories(
   include
 )
 
 add_executable(mt_exec_shared_node src/mt_exec_shared_node.cpp)
-ament_target_dependencies(mt_exec_shared_node rclcpp std_msgs)
+ament_target_dependencies(mt_exec_shared_node rclcpp std_msgs synthetic_workload_msgs)
 
 add_executable(mt_exec_personal_nodes src/mt_exec_personal_nodes.cpp)
-ament_target_dependencies(mt_exec_personal_nodes rclcpp std_msgs)
+ament_target_dependencies(mt_exec_personal_nodes rclcpp std_msgs synthetic_workload_msgs)
+
+add_executable(mt_exec_casini_copy src/mt_exec_casini_copy.cpp)
+ament_target_dependencies(mt_exec_casini_copy rclcpp std_msgs synthetic_workload_msgs)
 
 install(TARGETS
-  mt_exec_shared_node mt_exec_personal_nodes
+  mt_exec_shared_node mt_exec_personal_nodes mt_exec_casini_copy
   DESTINATION lib/${PROJECT_NAME}
 )
 

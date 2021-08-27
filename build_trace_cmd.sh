@@ -1,11 +1,14 @@
 > callbacks.txt
 
 # Multithreaded executor, single node
-echo 'mt_exec,empty_timer' >> callbacks.txt
-echo 'mt_exec,publishing_timer' >> callbacks.txt
-echo 'mt_exec,high_prio_callback' >> callbacks.txt
-echo 'mt_exec,med_prio_callback' >> callbacks.txt
-echo 'mt_exec,low_prio_callback' >> callbacks.txt
+echo 'mt_exec_casini_copy,hi_subscriber_callback' >> callbacks.txt
+echo 'mt_exec_casini_copy,me_subscriber_callback' >> callbacks.txt
+echo 'mt_exec_casini_copy,lo_subscriber_callback' >> callbacks.txt
+echo 'mt_exec_casini_copy,hi_service_callback' >> callbacks.txt
+echo 'mt_exec_casini_copy,me_service_callback' >> callbacks.txt
+echo 'mt_exec_casini_copy,lo_service_callback' >> callbacks.txt
+echo 'mt_exec_casini_copy,timer1_callback' >> callbacks.txt
+echo 'mt_exec_casini_copy,timer2_callback' >> callbacks.txt
 
 #objdump -d actor_detection | grep rclcpp | grep Publisher | grep cinematography_msgs | grep msg | grep BoundingBox | grep publish
 #objdump -d motion_planner | grep do_intra_process_publish
