@@ -143,6 +143,50 @@ private:
     size_t count_;
 };
 
+class StaggeredPubTimer : public rclcpp::Node
+{
+public:
+    void publishing_timer() {
+        std_msgs::msg::Int64 msg;
+        msg.data = count_;
+
+        // Burn time here
+        rclcpp::Time start = this->now();
+        while(this->now() - start < 100ms) {
+            count_ = burn(count_);
+        }
+        ha_pub_->publish(msg);
+        
+        // Burn time here
+        start = this->now();
+        while(this->now() - start < 100ms) {
+            count_ = burn(count_);
+        }
+        ma_pub_->publish(msg);
+        
+        // Burn time here
+        start = this->now();
+        while(this->now() - start < 100ms) {
+            count_ = burn(count_);
+        }
+        la_pub_->publish(msg);
+    }
+
+    StaggeredPubTimer() : rclcpp::Node("timer") {
+        ha_pub_ = this->create_publisher<std_msgs::msg::Int64>("ha", 1);
+        ma_pub_ = this->create_publisher<std_msgs::msg::Int64>("ma", 1);
+        la_pub_ = this->create_publisher<std_msgs::msg::Int64>("la", 1);
+        timer_ = this->create_wall_timer(500ms, std::bind(&StaggeredPubTimer::publishing_timer, this));
+    }
+
+private:
+    rclcpp::TimerBase::SharedPtr timer_;
+    rclcpp::Publisher<std_msgs::msg::Int64>::SharedPtr ha_pub_;
+    rclcpp::Publisher<std_msgs::msg::Int64>::SharedPtr ma_pub_;
+    rclcpp::Publisher<std_msgs::msg::Int64>::SharedPtr la_pub_;
+    size_t count_;
+};
+
 class Sub : public rclcpp::Node
 {
 public:
