@@ -21,8 +21,11 @@
 # echo 'mt_exec_ready_set,hi_subscriber_callback' >> callbacks.txt
 # echo 'mt_exec_ready_set,me_subscriber_callback' >> callbacks.txt
 
-echo 'mt_exec_concurrent_children,publishing_timer' >> callbacks.txt
-echo 'mt_exec_concurrent_children,subscriber_callback' >> callbacks.txt
+# echo 'mt_exec_concurrent_children,publishing_timer' >> callbacks.txt
+# echo 'mt_exec_concurrent_children,subscriber_callback' >> callbacks.txt
+
+echo 'mt_exec_polling_point_wait,subscriber_callback' >> callbacks.txt
+
 
 #objdump -d actor_detection | grep rclcpp | grep Publisher | grep cinematography_msgs | grep msg | grep BoundingBox | grep publish
 #objdump -d motion_planner | grep do_intra_process_publish

@@ -34,8 +34,12 @@ ament_target_dependencies(mt_exec_ready_set rclcpp std_msgs synthetic_workload_m
 add_executable(mt_exec_concurrent_children src/mt_exec_concurrent_children.cpp)
 ament_target_dependencies(mt_exec_concurrent_children rclcpp std_msgs synthetic_workload_msgs)
 
+add_executable(mt_exec_polling_point_wait src/mt_exec_polling_point_wait.cpp)
+ament_target_dependencies(mt_exec_polling_point_wait rclcpp std_msgs synthetic_workload_msgs)
+
 install(TARGETS
-  mt_exec_shared_node mt_exec_personal_nodes mt_exec_casini_copy mt_exec_ready_set mt_exec_concurrent_children
+  mt_exec_shared_node mt_exec_personal_nodes mt_exec_casini_copy mt_exec_ready_set
+  mt_exec_concurrent_children mt_exec_polling_point_wait
   DESTINATION lib/${PROJECT_NAME}
 )
 
